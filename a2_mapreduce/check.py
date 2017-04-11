@@ -50,6 +50,8 @@ def hashlines(filename):
     return lines
 
 if __name__ == '__main__':
+    if os.path.exists("./MapReduce.py") and os.getcwd() != dir_path:
+        os.rename("./MapReduce.py", "./MapReduce_student.py")
     run_all = True if (len(sys.argv) == 2 and sys.argv[1] == "all") else False
     if len(sys.argv) <= 1 or run_all:
         self_path = sys.argv[0]
