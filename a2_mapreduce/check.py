@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Tool for confirming the output of a program piped into stdin is a permutation
 of the file passed in as a command line argument
@@ -52,29 +50,36 @@ def hashlines(filename):
 if __name__ == '__main__':
     if os.path.exists("./MapReduce.py") and os.getcwd() != dir_path:
         os.rename("./MapReduce.py", "./MapReduce_student.py")
+    if os.path.exists("./MapReduce.pyc") and os.getcwd() != dir_path:
+        os.remove("./MapReduce.pyc")
     run_all = True if (len(sys.argv) == 2 and sys.argv[1] == "all") else False
     if len(sys.argv) <= 1 or run_all:
         self_path = sys.argv[0]
         import subprocess
         print ("\n\033[1m\033[4mChecking inverted_index.py\033[0m")
-        if subprocess.call("PYTHONPATH=$PYTHONPATH%s python inverted_index.py %s/books.json | python %s %s/inverted_index.json 3 sortkeys" % (dir_path, inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
+        if subprocess.call("python inverted_index.py %s/books.json | python %s %s/inverted_index.json 3 sortkeys" % (inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
             exit(-1)
 
         print ("\n\033[1m\033[4mChecking join.py\033[0m")
-        if subprocess.call("PYTHONPATH=$PYTHONPATH:%s python join.py %s/records.json | python %s %s/join.json 3" % (dir_path, inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
+        if subprocess.call("python join.py %s/records.json | python %s %s/join.json 3" % (inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
             exit(-1)
 
         print ("\n\033[1m\033[4mChecking friend_count.py\033[0m")
-        if subprocess.call("PYTHONPATH=$PYTHONPATH:%s python friend_count.py %s/friends.json | python %s %s/friend_count.json 3 " % (dir_path, inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
+        if subprocess.call("python friend_count.py %s/friends.json | python %s %s/friend_count.json 3 " % (inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
             exit(-1)
 
         print ("\n\033[1m\033[4mChecking unique_trims.py\033[0m")
-        if subprocess.call("PYTHONPATH=$PYTHONPATH:%s python unique_trims.py %s/dna.json | python %s %s/unique_trims.json 3" % (dir_path, inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
+        if subprocess.call("python unique_trims.py %s/dna.json | python %s %s/unique_trims.json 3" % (inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
             exit(-1)
 
-        print ("\n\033[1m\033[4mChecking multiply.py\033[0m")
-        if subprocess.call("PYTHONPATH=$PYTHONPATH:%s python multiply.py %s/matrix.json | sed 's/\"//g' | python %s %s/multiply.json 3" % (dir_path, inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
-            exit(-1)
+        if os.path.exists("./multiply1.py") and os.path.exists("./multiply2.py"):
+            print ("\n\033[1m\033[4mChecking multiply.py (2 stages) \033[0m")
+            if subprocess.call("python multiply1.py %s/matrix.json > tmp; python multiply2.py tmp | sed 's/\"//g' | python %s %s/multiply.json 3" % (inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
+                exit(-1)
+        else:
+            print ("\n\033[1m\033[4mChecking multiply.py\033[0m")
+            if subprocess.call("python multiply.py %s/matrix.json | sed 's/\"//g' | python %s %s/multiply.json 3" % (inputdir, self_path, solutiondir), shell=True) > 0 and not run_all:
+                exit(-1)
 
         if not run_all:
             print(u"\n\t\U0001F60E\t\n")
